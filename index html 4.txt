@@ -1,732 +1,734 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aplikasi Absensi Online</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body {
-font-family: 'Inter', sans-serif;
-background-color: #fdf2f8; /* Warna pink soft */
-}
-.tab-active {
-border-bottom-color: #3b82f6;
-color: #3b82f6;
-font-weight: 600;
-}
-.modal-backdrop {
-background-color: rgba(0, 0, 0, 0.5);
-}
-.hidden {
-display: none;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Absensi Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdf2f8; /* Warna pink soft */
+        }
+        .tab-active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body class="antialiased">
-<div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
-<!-- Judul Aplikasi -->
-<div class="text-center mb-8">
-<h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Aplikasi Absensi Online</h1>
-<p class="text-gray-700 mt-2 text-lg font-medium">SMAN 1 Dramaga</p>
-<p class="text-gray-600 mt-2">Solusi efisien untuk pencatatan kehadiran siswa.</p>
-</div>
-
-<!-- Kontainer Otentikasi -->
-<div id="auth-container">
-<div id="role-selection" class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-md mx-auto">
-<h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Masuk Sebagai</h2>
-<div class="space-y-4">
-<button data-role="guru" class="role-btn w-full text-lg bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600 transition shadow-sm flex items-center justify-center gap-3">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-Guru
-</button>
-<button data-role="sekretaris" class="role-btn w-full text-lg bg-indigo-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-indigo-600 transition shadow-sm flex items-center justify-center gap-3">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-Sekretaris
-</button>
-<button data-role="siswa" class="role-btn w-full text-lg bg-emerald-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-emerald-600 transition shadow-sm flex items-center justify-center gap-3">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="M12 12a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/></svg>
-Siswa
-</button>
-</div>
-</div>
-<div id="auth-forms" class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-md mx-auto hidden mt-6">
-<button id="back-to-role-selection" class="text-sm text-blue-600 hover:underline mb-4">&larr; Kembali pilih peran</button>
-<h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6"></h2>
-<form id="login-form" class="space-y-4">
-<div>
-<label for="login-username" class="block text-sm font-medium text-gray-700 mb-1">Nama Pengguna</label>
-<input type="text" id="login-username" placeholder="Ketik nama pengguna unik Anda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
-</div>
-<div id="teacher-username-wrapper" class="hidden">
-<label for="login-teacher-username" class="block text-sm font-medium text-gray-700 mb-1">Nama Pengguna Guru</label>
-<input type="text" id="login-teacher-username" placeholder="Ketik nama pengguna guru Anda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
-</div>
-<div>
-<label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Kata Sandi</label>
-<input type="password" id="login-password" placeholder="Ketik kata sandi Anda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
-</div>
-<button type="submit" class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition shadow-sm !mt-6">Masuk</button>
-<p id="auth-error" class="text-red-500 text-sm text-center"></p>
-</form>
-</div>
-</div>
-
-<!-- Kontainer Aplikasi ADMIN (Guru/Sekretaris) -->
-<div id="app-container-admin" class="hidden">
-<div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-<div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 pb-4 border-b">
-<p class="text-gray-700 mb-2 sm:mb-0">Login sebagai <span id="admin-role" class="font-bold capitalize"></span>: <strong id="user-email-admin" class="font-semibold"></strong></p>
-<button id="logout-btn-admin" class="w-full sm:w-auto bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 text-sm transition shadow-sm">Logout</button>
-</div>
-
-<!-- Navigasi Tab Admin -->
-<nav class="flex border-b mb-6">
-<button data-tab="absensi" class="admin-tab py-3 px-4 sm:px-6 border-b-2 tab-active">Absensi Harian</button>
-<button data-tab="siswa" id="tab-menu-data-siswa" class="admin-tab py-3 px-4 sm:px-6 border-b-2 border-transparent">Data Siswa</button>
-<button data-tab="laporan" id="tab-menu-laporan" class="admin-tab py-3 px-4 sm:px-6 border-b-2 border-transparent">Laporan</button>
-</nav>
-
-<!-- Konten Tab -->
-<div id="tab-content-absensi" class="tab-content">
-<!-- Kontrol & Ringkasan Absensi -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-<div>
-<label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Absensi</label>
-<input type="date" id="tanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-</div>
-<div class="bg-gray-50 p-4 rounded-lg border">
-<h3 class="font-semibold text-gray-800 mb-2">Ringkasan Hari Ini</h3>
-<div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
-<div class="p-2 rounded"><p class="font-bold text-xl text-green-600" id="hadir-count">0</p><p class="text-xs text-gray-600">Hadir</p></div>
-<div class="p-2 rounded"><p class="font-bold text-xl text-blue-600" id="izin-count">0</p><p class="text-xs text-gray-600">Izin</p></div>
-<div class="p-2 rounded"><p class="font-bold text-xl text-yellow-600" id="sakit-count">0</p><p class="text-xs text-gray-600">Sakit</p></div>
-<div class="p-2 rounded"><p class="font-bold text-xl text-red-600" id="alfa-count">0</p><p class="text-xs text-gray-600">Alfa</p></div>
-<div class="p-2 rounded"><p class="font-bold text-xl text-orange-500" id="pulang-count">0</p><p class="text-xs text-gray-600">Pulang</p></div>
-</div>
-</div>
-</div>
-<!-- Daftar Siswa untuk Absensi -->
-<div id="student-list-absensi" class="space-y-3"></div>
-</div>
-
-<div id="tab-content-siswa" class="tab-content hidden">
-<h2 class="text-2xl font-bold text-gray-800 mb-4">Manajemen Data Siswa</h2>
-<form id="add-student-form" class="flex flex-col sm:flex-row gap-2 mb-6 p-4 bg-gray-50 border rounded-lg">
-<input type="text" id="new-student-name" placeholder="Ketik nama siswa baru..." class="flex-grow w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-<button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 transition shadow-sm">Tambah Siswa</button>
-</form>
-<div id="student-management-table" class="overflow-x-auto"></div>
-</div>
-
-<div id="tab-content-laporan" class="tab-content hidden">
-<h2 class="text-2xl font-bold text-gray-800 mb-4">Laporan Absensi</h2>
-<div class="bg-gray-50 p-6 rounded-lg border">
-<h3 class="text-lg font-semibold text-gray-700 mb-4">Ekspor Laporan Harian (CSV)</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-<div>
-<label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Keterangan Kelas</label>
-<input type="text" id="kelas" placeholder="Contoh: 12 IPA 1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-</div>
-<div>
-<label for="wali-kelas" class="block text-sm font-medium text-gray-700 mb-1">Nama Guru/Wali Kelas</label>
-<input type="text" id="wali-kelas" placeholder="Contoh: Ibu Siti Aminah, S.Pd." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-</div>
-</div>
-<button id="export-csv-btn" class="w-full bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-emerald-600 transition shadow-sm flex items-center justify-center gap-2">
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-Kirim Laporan / Ekspor Data
-</button>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Kontainer Aplikasi SISWA -->
-<div id="app-container-siswa" class="hidden">
-<div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-<div class="flex justify-between items-center mb-6 pb-4 border-b">
-<div>
-<p class="text-gray-700">Login sebagai Siswa: <strong id="user-email-siswa" class="font-semibold"></strong></p>
-<p class="text-sm text-gray-500">Guru: <strong id="teacher-name-siswa" class="font-medium"></strong></p>
-</div>
-<button id="logout-btn-siswa" class="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 text-sm transition shadow-sm">Logout</button>
-</div>
-
-<!-- Area Absensi Siswa -->
-<div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-8">
-<h2 class="text-2xl font-bold text-gray-800 mb-2">Absensi Hari Ini</h2>
-<p class="text-gray-600 mb-4" id="tanggal-hari-ini"></p>
-
-<div id="form-absensi-siswa">
-<p class="font-semibold text-gray-700 mb-3">Pilih status kehadiran Anda:</p>
-<div class="flex flex-wrap gap-3 mb-4">
-<button data-status="Hadir" class="status-btn-siswa flex-grow bg-green-200 text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-300 transition">Hadir</button>
-<button data-status="Izin" class="status-btn-siswa flex-grow bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-300 transition">Izin</button>
-<button data-status="Sakit" class="status-btn-siswa flex-grow bg-yellow-200 text-yellow-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition">Sakit</button>
-</div>
-<div class="mb-4">
-<label for="keterangan-siswa" class="block text-sm font-medium text-gray-700 mb-1">Keterangan (jika Izin atau Sakit)</label>
-<textarea id="keterangan-siswa" rows="2" class="w-full px-3 py-2 text-base border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="Contoh: Ada acara keluarga."></textarea>
-</div>
-<button id="submit-absensi-siswa" class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition shadow-sm">Kirim Absensi</button>
-</div>
-
-<div id="info-absensi-tercatat" class="hidden">
-<p class="text-lg font-semibold text-gray-800">Absensi Anda hari ini telah tercatat.</p>
-<div id="detail-absensi-tercatat" class="mt-2 text-gray-700"></div>
-</div>
-</div>
-
-<!-- Area Rekap Absensi -->
-<div>
-<h2 class="text-xl font-bold text-gray-800 mb-4">Rekap Absensi Anda</h2>
-<p class="text-gray-600 mb-6">Berikut adalah catatan kehadiran Anda dalam 30 hari terakhir.</p>
-<div id="rekap-absensi-container" class="space-y-3">
-<!-- Data rekap akan dimuat di sini -->
-</div>
-</div>
-</div>
-</div>
-
-<!-- Modal Edit Siswa -->
-<div id="edit-student-modal" class="fixed inset-0 z-50 items-center justify-center hidden">
-<div class="modal-backdrop fixed inset-0"></div>
-<div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm m-4 z-10">
-<h3 class="text-lg font-semibold mb-4">Edit Nama Siswa</h3>
-<input type="text" id="edit-student-name-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4">
-<div class="flex justify-end space-x-2">
-<button id="cancel-edit-student" class="bg-gray-200 px-4 py-2 rounded-lg">Batal</button>
-<button id="save-edit-student" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Simpan</button>
-</div>
-</div>
-</div>
-
-<footer class="text-center mt-8 text-sm text-gray-500"><p>Dibuat untuk mempermudah proses belajar mengajar.</p></footer>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, query, setDoc, getDoc, updateDoc, serverTimestamp, getDocs, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-const firebaseConfig = typeof _firebase_config !== 'undefined' ? JSON.parse(_firebase_config) : { apiKey: "DEMO", authDomain: "DEMO", projectId: "DEMO" };
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// --- GLOBAL STATE ---
-let students = [];
-let attendanceData = {};
-let userId = null; // Will store username
-let studentsUnsubscribe = null;
-let attendanceUnsubscribe = null;
-let currentRole = null;
-let studentToEditId = null;
-let currentStudentData = { id: null, teacherUsername: null };
-
-// --- ELEMEN DOM ---
-const authContainer = document.getElementById('auth-container');
-const roleSelection = document.getElementById('role-selection');
-const authForms = document.getElementById('auth-forms');
-const loginForm = document.getElementById('login-form');
-
-const appContainerAdmin = document.getElementById('app-container-admin');
-const appContainerSiswa = document.getElementById('app-container-siswa');
-
-const tanggalInput = document.getElementById('tanggal');
-const addStudentForm = document.getElementById('add-student-form');
-const newStudentNameInput = document.getElementById('new-student-name');
-
-const editModal = document.getElementById('edit-student-modal');
-const editNameInput = document.getElementById('edit-student-name-input');
-
-// --- KONSTANTA & DATA STATIS ---
-const PASSWORDS = {
-guru: '54321',
-sekretaris: '678910',
-siswa: '12345'
-};
-
-// --- FUNGSI OTENTIKASI SEDERHANA ---
-const setupAuthEventListeners = () => {
-document.querySelectorAll('.role-btn').forEach(btn => {
-btn.addEventListener('click', () => showAuthForms(btn.dataset.role));
-});
-document.getElementById('back-to-role-selection').addEventListener('click', showRoleSelection);
-
-loginForm.addEventListener('submit', handleLogin);
-document.getElementById('logout-btn-admin').addEventListener('click', handleLogout);
-document.getElementById('logout-btn-siswa').addEventListener('click', handleLogout);
-};
-
-const showAuthForms = (role) => {
-currentRole = role;
-roleSelection.classList.add('hidden');
-authForms.classList.remove('hidden');
-document.getElementById('auth-title').textContent = Masuk sebagai ${role.charAt(0).toUpperCase() + role.slice(1)};
-document.getElementById('auth-error').textContent = '';
-
-const usernameInput = document.getElementById('login-username');
-const passwordInput = document.getElementById('login-password');
-const teacherUsernameWrapper = document.getElementById('teacher-username-wrapper');
-const teacherUsernameInput = document.getElementById('login-teacher-username');
-
-// Clear previous inputs and focus username field
-usernameInput.value = '';
-teacherUsernameInput.value = '';
-passwordInput.value = '';
-usernameInput.focus();
-
-if (role === 'guru' || role === 'sekretaris') {
-teacherUsernameWrapper.classList.add('hidden');
-} else if (role === 'siswa') {
-teacherUsernameWrapper.classList.remove('hidden');
-}
-};
-
-const showRoleSelection = () => {
-currentRole = null;
-roleSelection.classList.remove('hidden');
-authForms.classList.add('hidden');
-document.getElementById('teacher-username-wrapper').classList.add('hidden');
-};
-
-const handleLogin = (e) => {
-e.preventDefault();
-const username = document.getElementById('login-username').value.trim();
-const password = document.getElementById('login-password').value.trim();
-const authError = document.getElementById('auth-error');
-authError.textContent = '';
-
-if (!username || !password) {
-authError.textContent = "Nama pengguna dan kata sandi tidak boleh kosong.";
-return;
-}
-
-// --- Password Validation ---
-if (password !== PASSWORDS[currentRole]) {
-authError.textContent = "Kata sandi salah. Silakan coba lagi.";
-return;
-}
-
-userId = username;
-
-if (currentRole === 'guru' || currentRole === 'sekretaris') {
-initializeAppForAdmin(username, currentRole);
-} else if (currentRole === 'siswa') {
-const teacherUsername = document.getElementById('login-teacher-username').value.trim();
-if (!teacherUsername) {
-authError.textContent = "Nama pengguna guru tidak boleh kosong.";
-return;
-}
-initializeAppForStudent(username, teacherUsername);
-}
-};
-
-const handleLogout = () => {
-cleanupApp();
-};
-
-// --- FUNGSI UTAMA APLIKASI ---
-const initializeAppForAdmin = (username, role) => {
-document.getElementById('user-email-admin').textContent = username;
-document.getElementById('admin-role').textContent = role;
-
-authContainer.classList.add('hidden');
-appContainerSiswa.classList.add('hidden');
-appContainerAdmin.classList.remove('hidden');
-
-const dataSiswaMenu = document.getElementById('tab-menu-data-siswa');
-const laporanMenu = document.getElementById('tab-menu-laporan');
-if(role === 'guru') {
-dataSiswaMenu.classList.remove('hidden');
-laporanMenu.classList.remove('hidden');
-} else { // sekretaris
-dataSiswaMenu.classList.add('hidden');
-laporanMenu.classList.remove('hidden');
-}
-
-const today = new Date().toISOString().split('T')[0];
-tanggalInput.value = today;
-
-attachFirestoreListeners();
-setupAppEventListeners();
-switchTab('absensi');
-};
-
-const initializeAppForStudent = (username, teacherUsername) => {
-document.getElementById('user-email-siswa').textContent = username;
-document.getElementById('teacher-name-siswa').textContent = teacherUsername;
-authContainer.classList.add('hidden');
-appContainerAdmin.classList.add('hidden');
-appContainerSiswa.classList.remove('hidden');
-
-loadStudentDashboard(username, teacherUsername);
-fetchStudentAttendanceHistory(username, teacherUsername);
-};
-
-const cleanupApp = () => {
-if (studentsUnsubscribe) studentsUnsubscribe();
-if (attendanceUnsubscribe) attendanceUnsubscribe();
-userId = null; students = []; attendanceData = {};
-currentStudentData = { id: null, teacherUsername: null };
-appContainerAdmin.classList.add('hidden');
-appContainerSiswa.classList.add('hidden');
-authContainer.classList.remove('hidden');
-showRoleSelection();
-};
-
-// --- FUNGSI NAVIGASI & RENDER ADMIN ---
-const switchTab = (tabName) => {
-document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('tab-active'));
-document.getElementById(tab-content-${tabName}).classList.remove('hidden');
-document.querySelector(button[data-tab="${tabName}"]).classList.add('tab-active');
-};
-
-const renderStudentListForAbsensi = () => {
-const container = document.getElementById('student-list-absensi');
-container.innerHTML = students.length === 0 ? '<p class="text-center text-gray-500 pt-4">Tambahkan siswa di menu "Data Siswa".</p>' : '';
-students.forEach(student => {
-const data = attendanceData[student.id] || { status: 'Belum Absen', keterangan: '', timestamp: null };
-
-const timestamp = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
-
-const card = document.createElement('div');
-card.className = bg-white p-4 rounded-lg border border-gray-200 shadow-sm;
-card.innerHTML = `
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-<p class="font-semibold text-gray-800 text-lg">${student.name}</p>
-<div class="flex items-center gap-4 mt-2 sm:mt-0">
-<span class="text-sm text-gray-500 whitespace-nowrap">${timestamp ? Dicatat: ${timestamp} : ''}</span>
-<span class="px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(data.status)}">${data.status}</span>
-</div>
-</div>
-${data.keterangan ? <p class="text-sm text-gray-600 mt-2 pt-2 border-t"><strong>Keterangan:</strong> ${data.keterangan}</p> : ''}
-`;
-container.appendChild(card);
-});
-};
-
-const renderStudentManagementTable = () => {
-const container = document.getElementById('student-management-table');
-if (students.length === 0) {
-container.innerHTML = '<p class="text-center text-gray-500 py-4">Belum ada siswa yang ditambahkan.</p>';
-return;
-}
-const table = document.createElement('table');
-table.className = 'w-full text-left';
-table.innerHTML = `
-<thead class="bg-gray-100 text-sm text-gray-600"><tr>
-<th class="p-3 font-semibold">No.</th>
-<th class="p-3 font-semibold">Nama Siswa</th>
-<th class="p-3 font-semibold text-right">Aksi</th>
-</tr></thead>
-<tbody class="divide-y"></tbody>
-`;
-const tbody = table.querySelector('tbody');
-students.forEach((student, index) => {
-const tr = document.createElement('tr');
-tr.innerHTML = `
-<td class="p-3">${index + 1}</td>
-<td class="p-3 font-medium text-gray-800">${student.name}</td>
-<td class="p-3 text-right space-x-2">
-<button data-id="${student.id}" data-name="${student.name}" class="edit-student-btn text-blue-600 hover:underline text-sm font-semibold">Edit</button>
-<button data-id="${student.id}" class="delete-student-btn text-red-600 hover:underline text-sm font-semibold">Hapus</button>
-</td>
-`;
-tbody.appendChild(tr);
-});
-container.innerHTML = '';
-container.appendChild(table);
-};
-
-const updateSummary = () => {
-let counts = { Hadir: 0, Izin: 0, Sakit: 0, Alfa: 0, Pulang: 0, "Belum Absen": 0 };
-students.forEach(student => {
-const status = (attendanceData[student.id] && attendanceData[student.id].status) || 'Belum Absen';
-if(counts.hasOwnProperty(status)) {
-counts[status]++;
-}
-});
-
-counts.Alfa = counts["Belum Absen"]; // Treat "Belum Absen" as "Alfa" for summary
-
-document.getElementById('hadir-count').textContent = counts.Hadir;
-document.getElementById('izin-count').textContent = counts.Izin;
-document.getElementById('sakit-count').textContent = counts.Sakit;
-document.getElementById('alfa-count').textContent = counts.Alfa;
-document.getElementById('pulang-count').textContent = counts.Pulang;
-};
-
-// --- FUNGSI SISWA ---
-const loadStudentDashboard = async (studentUsername, teacherUsername) => {
-const today = new Date();
-const dateString = today.toISOString().split('T')[0];
-document.getElementById('tanggal-hari-ini').textContent = today.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-try {
-const studentId = await getStudentId(studentUsername, teacherUsername);
-if (!studentId) {
-document.getElementById('form-absensi-siswa').innerHTML = <p class="text-red-600 font-semibold">Data Anda tidak ditemukan. Pastikan nama pengguna Anda dan guru sudah benar.</p>;
-return;
-}
-currentStudentData = { id: studentId, teacherUsername };
-
-const attendanceDocRef = doc(db, admins/${teacherUsername}/attendance/${dateString}/records, studentId);
-const docSnap = await getDoc(attendanceDocRef);
-
-if (docSnap.exists()) {
-displayRecordedAttendance(docSnap.data());
-} else {
-setupStudentAttendanceForm();
-}
-
-} catch (error) {
-console.error("Error loading student dashboard:", error);
-document.getElementById('form-absensi-siswa').innerHTML = <p class="text-red-500">Terjadi kesalahan saat memuat data absensi.</p>;
-}
-};
-
-const displayRecordedAttendance = (data) => {
-document.getElementById('form-absensi-siswa').classList.add('hidden');
-const infoContainer = document.getElementById('info-absensi-tercatat');
-const detailContainer = document.getElementById('detail-absensi-tercatat');
-
-detailContainer.innerHTML = `
-<p><span class="font-semibold">Status:</span> <span class="px-2 py-1 text-sm rounded-full ${getStatusColor(data.status)}">${data.status}</span></p>
-${data.keterangan ? <p class="mt-1"><span class="font-semibold">Keterangan:</span> ${data.keterangan}</p> : ''}
-`;
-infoContainer.classList.remove('hidden');
-};
-
-const setupStudentAttendanceForm = () => {
-document.getElementById('info-absensi-tercatat').classList.add('hidden');
-document.getElementById('form-absensi-siswa').classList.remove('hidden');
-
-let selectedStatus = null;
-const statusButtons = document.querySelectorAll('.status-btn-siswa');
-statusButtons.forEach(btn => {
-btn.onclick = () => {
-selectedStatus = btn.dataset.status;
-statusButtons.forEach(b => b.classList.remove('ring-2', 'ring-blue-500'));
-btn.classList.add('ring-2', 'ring-blue-500');
-};
-});
-
-document.getElementById('submit-absensi-siswa').onclick = async () => {
-if (!selectedStatus) {
-alert('Silakan pilih status kehadiran Anda.');
-return;
-}
-const keterangan = document.getElementById('keterangan-siswa').value.trim();
-const { id, teacherUsername } = currentStudentData;
-const dateString = new Date().toISOString().split('T')[0];
-
-const attendanceRecord = {
-status: selectedStatus,
-keterangan: keterangan,
-timestamp: new Date()
-};
-
-try {
-const docRef = doc(db, admins/${teacherUsername}/attendance/${dateString}/records, id);
-await setDoc(docRef, attendanceRecord);
-displayRecordedAttendance(attendanceRecord);
-} catch(error) {
-console.error("Error submitting attendance:", error);
-alert('Gagal mengirim absensi. Silakan coba lagi.');
-}
-};
-};
-
-const getStudentId = async (studentUsername, teacherUsername) => {
-const studentsRef = collection(db, admins/${teacherUsername}/students);
-const q = query(studentsRef, where("name", "==", studentUsername));
-const querySnapshot = await getDocs(q);
-if (!querySnapshot.empty) {
-return querySnapshot.docs[0].id;
-}
-return null;
-};
-
-const fetchStudentAttendanceHistory = async (studentUsername, teacherUsername) => {
-const container = document.getElementById('rekap-absensi-container');
-container.innerHTML = '<p class="text-center text-gray-500">Mencari riwayat absensi...</p>';
-
-try {
-const studentId = await getStudentId(studentUsername, teacherUsername);
-if (!studentId) {
-container.innerHTML = <p class="text-center text-red-500">Riwayat tidak ditemukan.</p>;
-return;
-}
-
-let attendanceRecords = [];
-for (let i = 0; i < 30; i++) {
-const date = new Date();
-date.setDate(date.getDate() - i);
-const dateString = date.toISOString().split('T')[0];
-const attendanceDocRef = doc(db, admins/${teacherUsername}/attendance/${dateString}/records, studentId);
-const docSnap = await getDoc(attendanceDocRef);
-if (docSnap.exists()) {
-attendanceRecords.push({ date: dateString, ...docSnap.data() });
-}
-}
-renderStudentAttendanceHistory(attendanceRecords);
-
-} catch (error) {
-console.error("Error fetching attendance history:", error);
-container.innerHTML = <p class="text-center text-red-500">Terjadi kesalahan saat mengambil riwayat.</p>;
-}
-};
-
-const renderStudentAttendanceHistory = (records) => {
-const container = document.getElementById('rekap-absensi-container');
-if (records.length === 0) {
-container.innerHTML = '<p class="text-center text-gray-500">Tidak ada catatan absensi ditemukan dalam 30 hari terakhir.</p>';
-return;
-}
-
-container.innerHTML = '';
-records.forEach(record => {
-const date = new Date(record.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-const card = document.createElement('div');
-card.className = 'bg-white p-4 rounded-lg border border-gray-200 shadow-sm';
-card.innerHTML = `
-<div class="flex flex-col sm:flex-row justify-between sm:items-center">
-<div>
-<p class="font-bold text-gray-800">${date}</p>
-<p class="text-sm text-gray-600">Keterangan: ${record.keterangan || '-'}</p>
-</div>
-<div class="mt-2 sm:mt-0">
-<span class="px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(record.status)}">${record.status}</span>
-</div>
-</div>
-`;
-container.appendChild(card);
-});
-};
-
-// --- FUNGSI EVENT HANDLER & CRUD ---
-const setupAppEventListeners = () => {
-document.querySelectorAll('.admin-tab').forEach(tab => {
-tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-});
-
-addStudentForm.addEventListener('submit', async (e) => {
-e.preventDefault();
-const name = newStudentNameInput.value.trim();
-if (name && userId) {
-await addDoc(collection(db, admins/${userId}/students), { name });
-newStudentNameInput.value = '';
-}
-});
-
-document.getElementById('student-management-table').addEventListener('click', (e) => {
-if (e.target.classList.contains('edit-student-btn')) {
-studentToEditId = e.target.dataset.id;
-editNameInput.value = e.target.dataset.name;
-editModal.classList.remove('hidden');
-editModal.classList.add('flex');
-}
-if (e.target.classList.contains('delete-student-btn')) {
-if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
-deleteDoc(doc(db, admins/${userId}/students, e.target.dataset.id));
-}
-}
-});
-
-document.getElementById('cancel-edit-student').addEventListener('click', () => {
-editModal.classList.add('hidden');
-editModal.classList.remove('flex');
-studentToEditId = null;
-});
-
-document.getElementById('save-edit-student').addEventListener('click', async () => {
-if (studentToEditId) {
-const newName = editNameInput.value.trim();
-if (newName) {
-await updateDoc(doc(db, admins/${userId}/students, studentToEditId), { name: newName });
-document.getElementById('cancel-edit-student').click();
-}
-}
-});
-
-tanggalInput.addEventListener('change', () => attachAttendanceListener(tanggalInput.value));
-document.getElementById('export-csv-btn').addEventListener('click', exportToCSV);
-};
-
-const attachFirestoreListeners = () => {
-if (!userId) return;
-const studentsPath = admins/${userId}/students;
-studentsUnsubscribe = onSnapshot(query(collection(db, studentsPath)), (snapshot) => {
-students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-students.sort((a, b) => a.name.localeCompare(b.name));
-renderStudentListForAbsensi();
-renderStudentManagementTable();
-updateSummary();
-});
-attachAttendanceListener(tanggalInput.value);
-};
-
-const attachAttendanceListener = (dateString) => {
-if (attendanceUnsubscribe) attendanceUnsubscribe();
-if (!userId || !dateString) return;
-const attendancePath = admins/${userId}/attendance/${dateString}/records;
-attendanceUnsubscribe = onSnapshot(query(collection(db, attendancePath)), (snapshot) => {
-attendanceData = {};
-snapshot.docs.forEach(doc => attendanceData[doc.id] = doc.data());
-renderStudentListForAbsensi();
-updateSummary();
-});
-};
-
-// --- FUNGSI UTILITAS ---
-const getStatusColor = (status) => {
-switch(status) {
-case 'Hadir': return 'text-green-800 bg-green-100';
-case 'Izin': return 'text-blue-800 bg-blue-100';
-case 'Sakit': return 'text-yellow-800 bg-yellow-100';
-case 'Alfa': return 'text-red-800 bg-red-100';
-case 'Pulang': return 'text-orange-800 bg-orange-100';
-default: return 'text-gray-800 bg-gray-100';
-}
-};
-
-const exportToCSV = () => {
-const kelas = document.getElementById('kelas').value || 'Tidak_Ada_Kelas';
-const tanggal = tanggalInput.value;
-const waliKelas = document.getElementById('wali-kelas').value || 'Tidak_Ada_Wali';
-
-let csvContent = "data:text/csv;charset=utf-8,";
-csvContent += Rekap Absensi Kelas,${kelas}\r\n;
-csvContent += Tanggal,${tanggal}\r\n;
-csvContent += Wali Kelas,${waliKelas}\r\n\r\n;
-csvContent += "No.,Nama Siswa,Status,Keterangan,Waktu\r\n";
-
-students.forEach((student, index) => {
-const data = attendanceData[student.id] || { status: 'Belum Diabsen', keterangan: '', timestamp: null };
-const keterangan = "${(data.keterangan || '').replace(/"/g, '""')}";
-const waktu = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleTimeString('id-ID') : '';
-csvContent += ${index + 1},${student.name},${data.status},${keterangan},${waktu}\r\n;
-});
-
-const encodedUri = encodeURI(csvContent);
-const link = document.createElement("a");
-link.setAttribute("href", encodedUri);
-link.setAttribute("download", absensi_${kelas.replace(/\s+/g, '_')}_${tanggal}.csv);
-document.body.appendChild(link);
-link.click();
-document.body.removeChild(link);
-};
-
-// --- INISIALISASI ---
-document.addEventListener('DOMContentLoaded', setupAuthEventListeners);
-
-</script>
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+        <!-- Judul Aplikasi -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Aplikasi Absensi Online</h1>
+            <p class="text-gray-700 mt-2 text-lg font-medium">SMAN 1 Dramaga</p>
+            <p class="text-gray-600 mt-2">Solusi efisien untuk pencatatan kehadiran siswa.</p>
+        </div>
+
+        <!-- Kontainer Otentikasi -->
+        <div id="auth-container">
+            <div id="role-selection" class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-md mx-auto">
+                 <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Masuk Sebagai</h2>
+                 <div class="space-y-4">
+                    <button data-role="guru" class="role-btn w-full text-lg bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600 transition shadow-sm flex items-center justify-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        Guru
+                    </button>
+                    <button data-role="sekretaris" class="role-btn w-full text-lg bg-indigo-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-indigo-600 transition shadow-sm flex items-center justify-center gap-3">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Sekretaris
+                    </button>
+                    <button data-role="siswa" class="role-btn w-full text-lg bg-emerald-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-emerald-600 transition shadow-sm flex items-center justify-center gap-3">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="M12 12a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/></svg>
+                        Siswa
+                    </button>
+                 </div>
+            </div>
+            <div id="auth-forms" class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-md mx-auto hidden mt-6">
+                <button id="back-to-role-selection" class="text-sm text-blue-600 hover:underline mb-4">&larr; Kembali pilih peran</button>
+                <h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6"></h2>
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label for="login-username" class="block text-sm font-medium text-gray-700 mb-1">Nama Pengguna</label>
+                        <input type="text" id="login-username" placeholder="Ketik nama pengguna unik Anda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div id="teacher-username-wrapper" class="hidden">
+                        <label for="login-teacher-username" class="block text-sm font-medium text-gray-700 mb-1">Nama Pengguna Guru</label>
+                        <input type="text" id="login-teacher-username" placeholder="Ketik nama pengguna guru Anda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Kata Sandi</label>
+                        <input type="password" id="login-password" placeholder="Ketik kata sandi Anda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition shadow-sm !mt-6">Masuk</button>
+                    <p id="auth-error" class="text-red-500 text-sm text-center"></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Kontainer Aplikasi ADMIN (Guru/Sekretaris) -->
+        <div id="app-container-admin" class="hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 pb-4 border-b">
+                    <p class="text-gray-700 mb-2 sm:mb-0">Login sebagai <span id="admin-role" class="font-bold capitalize"></span>: <strong id="user-email-admin" class="font-semibold"></strong></p>
+                    <button id="logout-btn-admin" class="w-full sm:w-auto bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 text-sm transition shadow-sm">Logout</button>
+                </div>
+
+                <!-- Navigasi Tab Admin -->
+                <nav class="flex border-b mb-6">
+                    <button data-tab="absensi" class="admin-tab py-3 px-4 sm:px-6 border-b-2 tab-active">Absensi Harian</button>
+                    <button data-tab="siswa" id="tab-menu-data-siswa" class="admin-tab py-3 px-4 sm:px-6 border-b-2 border-transparent">Data Siswa</button>
+                    <button data-tab="laporan" id="tab-menu-laporan" class="admin-tab py-3 px-4 sm:px-6 border-b-2 border-transparent">Laporan</button>
+                </nav>
+
+                <!-- Konten Tab -->
+                <div id="tab-content-absensi" class="tab-content">
+                    <!-- Kontrol & Ringkasan Absensi -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Absensi</label>
+                            <input type="date" id="tanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg border">
+                            <h3 class="font-semibold text-gray-800 mb-2">Ringkasan Hari Ini</h3>
+                            <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
+                                <div class="p-2 rounded"><p class="font-bold text-xl text-green-600" id="hadir-count">0</p><p class="text-xs text-gray-600">Hadir</p></div>
+                                <div class="p-2 rounded"><p class="font-bold text-xl text-blue-600" id="izin-count">0</p><p class="text-xs text-gray-600">Izin</p></div>
+                                <div class="p-2 rounded"><p class="font-bold text-xl text-yellow-600" id="sakit-count">0</p><p class="text-xs text-gray-600">Sakit</p></div>
+                                <div class="p-2 rounded"><p class="font-bold text-xl text-red-600" id="alfa-count">0</p><p class="text-xs text-gray-600">Alfa</p></div>
+                                <div class="p-2 rounded"><p class="font-bold text-xl text-orange-500" id="pulang-count">0</p><p class="text-xs text-gray-600">Pulang</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Daftar Siswa untuk Absensi -->
+                    <div id="student-list-absensi" class="space-y-3"></div>
+                </div>
+
+                <div id="tab-content-siswa" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Manajemen Data Siswa</h2>
+                    <form id="add-student-form" class="flex flex-col sm:flex-row gap-2 mb-6 p-4 bg-gray-50 border rounded-lg">
+                        <input type="text" id="new-student-name" placeholder="Ketik nama siswa baru..." class="flex-grow w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
+                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 transition shadow-sm">Tambah Siswa</button>
+                    </form>
+                    <div id="student-management-table" class="overflow-x-auto"></div>
+                </div>
+
+                <div id="tab-content-laporan" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Laporan Absensi</h2>
+                    <div class="bg-gray-50 p-6 rounded-lg border">
+                         <h3 class="text-lg font-semibold text-gray-700 mb-4">Ekspor Laporan Harian (CSV)</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Keterangan Kelas</label>
+                                <input type="text" id="kelas" placeholder="Contoh: 12 IPA 1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="wali-kelas" class="block text-sm font-medium text-gray-700 mb-1">Nama Guru/Wali Kelas</label>
+                                <input type="text" id="wali-kelas" placeholder="Contoh: Ibu Siti Aminah, S.Pd." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                         </div>
+                         <button id="export-csv-btn" class="w-full bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-emerald-600 transition shadow-sm flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Kirim Laporan / Ekspor Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kontainer Aplikasi SISWA -->
+        <div id="app-container-siswa" class="hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                    <div>
+                        <p class="text-gray-700">Login sebagai Siswa: <strong id="user-email-siswa" class="font-semibold"></strong></p>
+                        <p class="text-sm text-gray-500">Guru: <strong id="teacher-name-siswa" class="font-medium"></strong></p>
+                    </div>
+                    <button id="logout-btn-siswa" class="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 text-sm transition shadow-sm">Logout</button>
+                </div>
+                
+                <!-- Area Absensi Siswa -->
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Absensi Hari Ini</h2>
+                    <p class="text-gray-600 mb-4" id="tanggal-hari-ini"></p>
+                    
+                    <div id="form-absensi-siswa">
+                        <p class="font-semibold text-gray-700 mb-3">Pilih status kehadiran Anda:</p>
+                        <div class="flex flex-wrap gap-3 mb-4">
+                           <button data-status="Hadir" class="status-btn-siswa flex-grow bg-green-200 text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-300 transition">Hadir</button>
+                           <button data-status="Izin" class="status-btn-siswa flex-grow bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-300 transition">Izin</button>
+                           <button data-status="Sakit" class="status-btn-siswa flex-grow bg-yellow-200 text-yellow-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition">Sakit</button>
+                        </div>
+                        <div class="mb-4">
+                            <label for="keterangan-siswa" class="block text-sm font-medium text-gray-700 mb-1">Keterangan (jika Izin atau Sakit)</label>
+                            <textarea id="keterangan-siswa" rows="2" class="w-full px-3 py-2 text-base border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="Contoh: Ada acara keluarga."></textarea>
+                        </div>
+                        <button id="submit-absensi-siswa" class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition shadow-sm">Kirim Absensi</button>
+                    </div>
+
+                    <div id="info-absensi-tercatat" class="hidden">
+                        <p class="text-lg font-semibold text-gray-800">Absensi Anda hari ini telah tercatat.</p>
+                        <div id="detail-absensi-tercatat" class="mt-2 text-gray-700"></div>
+                    </div>
+                </div>
+
+                <!-- Area Rekap Absensi -->
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Rekap Absensi Anda</h2>
+                    <p class="text-gray-600 mb-6">Berikut adalah catatan kehadiran Anda dalam 30 hari terakhir.</p>
+                    <div id="rekap-absensi-container" class="space-y-3">
+                        <!-- Data rekap akan dimuat di sini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Edit Siswa -->
+        <div id="edit-student-modal" class="fixed inset-0 z-50 items-center justify-center hidden">
+            <div class="modal-backdrop fixed inset-0"></div>
+            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm m-4 z-10">
+                <h3 class="text-lg font-semibold mb-4">Edit Nama Siswa</h3>
+                <input type="text" id="edit-student-name-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4">
+                <div class="flex justify-end space-x-2">
+                    <button id="cancel-edit-student" class="bg-gray-200 px-4 py-2 rounded-lg">Batal</button>
+                    <button id="save-edit-student" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Simpan</button>
+                </div>
+            </div>
+        </div>
+
+         <footer class="text-center mt-8 text-sm text-gray-500"><p>Dibuat untuk mempermudah proses belajar mengajar.</p></footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, query, setDoc, getDoc, updateDoc, serverTimestamp, getDocs, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEMO", authDomain: "DEMO", projectId: "DEMO" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- GLOBAL STATE ---
+        let students = [];
+        let attendanceData = {};
+        let userId = null; // Will store username
+        let studentsUnsubscribe = null;
+        let attendanceUnsubscribe = null;
+        let currentRole = null;
+        let studentToEditId = null;
+        let currentStudentData = { id: null, teacherUsername: null };
+
+        // --- ELEMEN DOM ---
+        const authContainer = document.getElementById('auth-container');
+        const roleSelection = document.getElementById('role-selection');
+        const authForms = document.getElementById('auth-forms');
+        const loginForm = document.getElementById('login-form');
+        
+        const appContainerAdmin = document.getElementById('app-container-admin');
+        const appContainerSiswa = document.getElementById('app-container-siswa');
+        
+        const tanggalInput = document.getElementById('tanggal');
+        const addStudentForm = document.getElementById('add-student-form');
+        const newStudentNameInput = document.getElementById('new-student-name');
+        
+        const editModal = document.getElementById('edit-student-modal');
+        const editNameInput = document.getElementById('edit-student-name-input');
+        
+        // --- KONSTANTA & DATA STATIS ---
+        const PASSWORDS = {
+            guru: '54321',
+            sekretaris: '678910',
+            siswa: '12345'
+        };
+
+        // --- FUNGSI OTENTIKASI SEDERHANA ---
+        const setupAuthEventListeners = () => {
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.addEventListener('click', () => showAuthForms(btn.dataset.role));
+            });
+            document.getElementById('back-to-role-selection').addEventListener('click', showRoleSelection);
+
+            loginForm.addEventListener('submit', handleLogin);
+            document.getElementById('logout-btn-admin').addEventListener('click', handleLogout);
+            document.getElementById('logout-btn-siswa').addEventListener('click', handleLogout);
+        };
+        
+        const showAuthForms = (role) => {
+            currentRole = role;
+            roleSelection.classList.add('hidden');
+            authForms.classList.remove('hidden');
+            document.getElementById('auth-title').textContent = `Masuk sebagai ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+            document.getElementById('auth-error').textContent = '';
+            
+            const usernameInput = document.getElementById('login-username');
+            const passwordInput = document.getElementById('login-password');
+            const teacherUsernameWrapper = document.getElementById('teacher-username-wrapper');
+            const teacherUsernameInput = document.getElementById('login-teacher-username');
+
+            // Clear previous inputs and focus username field
+            usernameInput.value = '';
+            teacherUsernameInput.value = '';
+            passwordInput.value = '';
+            usernameInput.focus();
+
+            if (role === 'guru' || role === 'sekretaris') {
+                teacherUsernameWrapper.classList.add('hidden');
+            } else if (role === 'siswa') {
+                teacherUsernameWrapper.classList.remove('hidden');
+            }
+        };
+
+        const showRoleSelection = () => {
+            currentRole = null;
+            roleSelection.classList.remove('hidden');
+            authForms.classList.add('hidden');
+            document.getElementById('teacher-username-wrapper').classList.add('hidden');
+        };
+
+        const handleLogin = (e) => {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const authError = document.getElementById('auth-error');
+            authError.textContent = '';
+
+            if (!username || !password) {
+                authError.textContent = "Nama pengguna dan kata sandi tidak boleh kosong.";
+                return;
+            }
+
+            // --- Password Validation ---
+            if (password !== PASSWORDS[currentRole]) {
+                authError.textContent = "Kata sandi salah. Silakan coba lagi.";
+                return;
+            }
+            
+            userId = username; 
+
+            if (currentRole === 'guru' || currentRole === 'sekretaris') {
+                initializeAppForAdmin(username, currentRole);
+            } else if (currentRole === 'siswa') {
+                const teacherUsername = document.getElementById('login-teacher-username').value.trim();
+                if (!teacherUsername) {
+                    authError.textContent = "Nama pengguna guru tidak boleh kosong.";
+                    return;
+                }
+                initializeAppForStudent(username, teacherUsername);
+            }
+        };
+
+        const handleLogout = () => {
+            cleanupApp();
+        };
+
+        // --- FUNGSI UTAMA APLIKASI ---
+        const initializeAppForAdmin = (username, role) => {
+            document.getElementById('user-email-admin').textContent = username;
+            document.getElementById('admin-role').textContent = role;
+
+            authContainer.classList.add('hidden');
+            appContainerSiswa.classList.add('hidden');
+            appContainerAdmin.classList.remove('hidden');
+            
+            const dataSiswaMenu = document.getElementById('tab-menu-data-siswa');
+            const laporanMenu = document.getElementById('tab-menu-laporan');
+            if(role === 'guru') {
+                dataSiswaMenu.classList.remove('hidden');
+                laporanMenu.classList.remove('hidden');
+            } else { // sekretaris
+                dataSiswaMenu.classList.add('hidden');
+                laporanMenu.classList.remove('hidden');
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            tanggalInput.value = today;
+
+            attachFirestoreListeners();
+            setupAppEventListeners();
+            switchTab('absensi');
+        };
+
+        const initializeAppForStudent = (username, teacherUsername) => {
+            document.getElementById('user-email-siswa').textContent = username;
+            document.getElementById('teacher-name-siswa').textContent = teacherUsername;
+            authContainer.classList.add('hidden');
+            appContainerAdmin.classList.add('hidden');
+            appContainerSiswa.classList.remove('hidden');
+
+            loadStudentDashboard(username, teacherUsername);
+            fetchStudentAttendanceHistory(username, teacherUsername);
+        };
+
+        const cleanupApp = () => {
+            if (studentsUnsubscribe) studentsUnsubscribe();
+            if (attendanceUnsubscribe) attendanceUnsubscribe();
+            userId = null; students = []; attendanceData = {};
+            currentStudentData = { id: null, teacherUsername: null };
+            appContainerAdmin.classList.add('hidden');
+            appContainerSiswa.classList.add('hidden');
+            authContainer.classList.remove('hidden');
+            showRoleSelection();
+        };
+
+        // --- FUNGSI NAVIGASI & RENDER ADMIN ---
+        const switchTab = (tabName) => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('tab-active'));
+            document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
+            document.querySelector(`button[data-tab="${tabName}"]`).classList.add('tab-active');
+        };
+
+        const renderStudentListForAbsensi = () => {
+            const container = document.getElementById('student-list-absensi');
+            container.innerHTML = students.length === 0 ? '<p class="text-center text-gray-500 pt-4">Tambahkan siswa di menu "Data Siswa".</p>' : '';
+            students.forEach(student => {
+                const data = attendanceData[student.id] || { status: 'Belum Absen', keterangan: '', timestamp: null };
+                
+                const timestamp = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
+
+                const card = document.createElement('div');
+                card.className = `bg-white p-4 rounded-lg border border-gray-200 shadow-sm`;
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <p class="font-semibold text-gray-800 text-lg">${student.name}</p>
+                        <div class="flex items-center gap-4 mt-2 sm:mt-0">
+                             <span class="text-sm text-gray-500 whitespace-nowrap">${timestamp ? `Dicatat: ${timestamp}` : ''}</span>
+                             <span class="px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(data.status)}">${data.status}</span>
+                        </div>
+                    </div>
+                    ${data.keterangan ? `<p class="text-sm text-gray-600 mt-2 pt-2 border-t"><strong>Keterangan:</strong> ${data.keterangan}</p>` : ''}
+                `;
+                container.appendChild(card);
+            });
+        };
+        
+        const renderStudentManagementTable = () => {
+            const container = document.getElementById('student-management-table');
+            if (students.length === 0) {
+                 container.innerHTML = '<p class="text-center text-gray-500 py-4">Belum ada siswa yang ditambahkan.</p>';
+                 return;
+            }
+            const table = document.createElement('table');
+            table.className = 'w-full text-left';
+            table.innerHTML = `
+                <thead class="bg-gray-100 text-sm text-gray-600"><tr>
+                    <th class="p-3 font-semibold">No.</th>
+                    <th class="p-3 font-semibold">Nama Siswa</th>
+                    <th class="p-3 font-semibold text-right">Aksi</th>
+                </tr></thead>
+                <tbody class="divide-y"></tbody>
+            `;
+            const tbody = table.querySelector('tbody');
+            students.forEach((student, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3">${index + 1}</td>
+                    <td class="p-3 font-medium text-gray-800">${student.name}</td>
+                    <td class="p-3 text-right space-x-2">
+                        <button data-id="${student.id}" data-name="${student.name}" class="edit-student-btn text-blue-600 hover:underline text-sm font-semibold">Edit</button>
+                        <button data-id="${student.id}" class="delete-student-btn text-red-600 hover:underline text-sm font-semibold">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            container.innerHTML = '';
+            container.appendChild(table);
+        };
+        
+        const updateSummary = () => {
+            let counts = { Hadir: 0, Izin: 0, Sakit: 0, Alfa: 0, Pulang: 0, "Belum Absen": 0 };
+            students.forEach(student => {
+                 const status = (attendanceData[student.id] && attendanceData[student.id].status) || 'Belum Absen';
+                 if(counts.hasOwnProperty(status)) {
+                    counts[status]++;
+                 }
+            });
+            
+            counts.Alfa = counts["Belum Absen"]; // Treat "Belum Absen" as "Alfa" for summary
+
+            document.getElementById('hadir-count').textContent = counts.Hadir;
+            document.getElementById('izin-count').textContent = counts.Izin;
+            document.getElementById('sakit-count').textContent = counts.Sakit;
+            document.getElementById('alfa-count').textContent = counts.Alfa;
+            document.getElementById('pulang-count').textContent = counts.Pulang;
+        };
+
+        // --- FUNGSI SISWA ---
+        const loadStudentDashboard = async (studentUsername, teacherUsername) => {
+            const today = new Date();
+            const dateString = today.toISOString().split('T')[0];
+            document.getElementById('tanggal-hari-ini').textContent = today.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            try {
+                const studentId = await getStudentId(studentUsername, teacherUsername);
+                if (!studentId) {
+                    document.getElementById('form-absensi-siswa').innerHTML = `<p class="text-red-600 font-semibold">Data Anda tidak ditemukan. Pastikan nama pengguna Anda dan guru sudah benar.</p>`;
+                    return;
+                }
+                currentStudentData = { id: studentId, teacherUsername };
+
+                const attendanceDocRef = doc(db, `admins/${teacherUsername}/attendance/${dateString}/records`, studentId);
+                const docSnap = await getDoc(attendanceDocRef);
+
+                if (docSnap.exists()) {
+                    displayRecordedAttendance(docSnap.data());
+                } else {
+                    setupStudentAttendanceForm();
+                }
+
+            } catch (error) {
+                console.error("Error loading student dashboard:", error);
+                document.getElementById('form-absensi-siswa').innerHTML = `<p class="text-red-500">Terjadi kesalahan saat memuat data absensi.</p>`;
+            }
+        };
+
+        const displayRecordedAttendance = (data) => {
+            document.getElementById('form-absensi-siswa').classList.add('hidden');
+            const infoContainer = document.getElementById('info-absensi-tercatat');
+            const detailContainer = document.getElementById('detail-absensi-tercatat');
+            
+            detailContainer.innerHTML = `
+                <p><span class="font-semibold">Status:</span> <span class="px-2 py-1 text-sm rounded-full ${getStatusColor(data.status)}">${data.status}</span></p>
+                ${data.keterangan ? `<p class="mt-1"><span class="font-semibold">Keterangan:</span> ${data.keterangan}</p>` : ''}
+            `;
+            infoContainer.classList.remove('hidden');
+        };
+
+        const setupStudentAttendanceForm = () => {
+            document.getElementById('info-absensi-tercatat').classList.add('hidden');
+            document.getElementById('form-absensi-siswa').classList.remove('hidden');
+            
+            let selectedStatus = null;
+            const statusButtons = document.querySelectorAll('.status-btn-siswa');
+            statusButtons.forEach(btn => {
+                btn.onclick = () => {
+                    selectedStatus = btn.dataset.status;
+                    statusButtons.forEach(b => b.classList.remove('ring-2', 'ring-blue-500'));
+                    btn.classList.add('ring-2', 'ring-blue-500');
+                };
+            });
+
+            document.getElementById('submit-absensi-siswa').onclick = async () => {
+                if (!selectedStatus) {
+                    alert('Silakan pilih status kehadiran Anda.');
+                    return;
+                }
+                const keterangan = document.getElementById('keterangan-siswa').value.trim();
+                const { id, teacherUsername } = currentStudentData;
+                const dateString = new Date().toISOString().split('T')[0];
+                
+                const attendanceRecord = {
+                    status: selectedStatus,
+                    keterangan: keterangan,
+                    timestamp: new Date()
+                };
+                
+                try {
+                    const docRef = doc(db, `admins/${teacherUsername}/attendance/${dateString}/records`, id);
+                    await setDoc(docRef, attendanceRecord);
+                    displayRecordedAttendance(attendanceRecord);
+                } catch(error) {
+                    console.error("Error submitting attendance:", error);
+                    alert('Gagal mengirim absensi. Silakan coba lagi.');
+                }
+            };
+        };
+        
+        const getStudentId = async (studentUsername, teacherUsername) => {
+            const studentsRef = collection(db, `admins/${teacherUsername}/students`);
+            const q = query(studentsRef, where("name", "==", studentUsername));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                return querySnapshot.docs[0].id;
+            }
+            return null;
+        };
+
+        const fetchStudentAttendanceHistory = async (studentUsername, teacherUsername) => {
+            const container = document.getElementById('rekap-absensi-container');
+            container.innerHTML = '<p class="text-center text-gray-500">Mencari riwayat absensi...</p>';
+
+            try {
+                const studentId = await getStudentId(studentUsername, teacherUsername);
+                if (!studentId) {
+                    container.innerHTML = `<p class="text-center text-red-500">Riwayat tidak ditemukan.</p>`;
+                    return;
+                }
+                
+                let attendanceRecords = [];
+                for (let i = 0; i < 30; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateString = date.toISOString().split('T')[0];
+                    const attendanceDocRef = doc(db, `admins/${teacherUsername}/attendance/${dateString}/records`, studentId);
+                    const docSnap = await getDoc(attendanceDocRef);
+                    if (docSnap.exists()) {
+                        attendanceRecords.push({ date: dateString, ...docSnap.data() });
+                    }
+                }
+                renderStudentAttendanceHistory(attendanceRecords);
+
+            } catch (error) {
+                console.error("Error fetching attendance history:", error);
+                container.innerHTML = `<p class="text-center text-red-500">Terjadi kesalahan saat mengambil riwayat.</p>`;
+            }
+        };
+
+        const renderStudentAttendanceHistory = (records) => {
+            const container = document.getElementById('rekap-absensi-container');
+            if (records.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500">Tidak ada catatan absensi ditemukan dalam 30 hari terakhir.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            records.forEach(record => {
+                const date = new Date(record.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-lg border border-gray-200 shadow-sm';
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center">
+                        <div>
+                            <p class="font-bold text-gray-800">${date}</p>
+                            <p class="text-sm text-gray-600">Keterangan: ${record.keterangan || '-'}</p>
+                        </div>
+                        <div class="mt-2 sm:mt-0">
+                            <span class="px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(record.status)}">${record.status}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        // --- FUNGSI EVENT HANDLER & CRUD ---
+        const setupAppEventListeners = () => {
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+
+            addStudentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = newStudentNameInput.value.trim();
+                if (name && userId) {
+                    await addDoc(collection(db, `admins/${userId}/students`), { name });
+                    newStudentNameInput.value = '';
+                }
+            });
+            
+            document.getElementById('student-management-table').addEventListener('click', (e) => {
+                if (e.target.classList.contains('edit-student-btn')) {
+                    studentToEditId = e.target.dataset.id;
+                    editNameInput.value = e.target.dataset.name;
+                    editModal.classList.remove('hidden');
+                    editModal.classList.add('flex');
+                }
+                if (e.target.classList.contains('delete-student-btn')) {
+                    if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
+                        deleteDoc(doc(db, `admins/${userId}/students`, e.target.dataset.id));
+                    }
+                }
+            });
+
+            document.getElementById('cancel-edit-student').addEventListener('click', () => {
+                editModal.classList.add('hidden');
+                editModal.classList.remove('flex');
+                studentToEditId = null;
+            });
+
+            document.getElementById('save-edit-student').addEventListener('click', async () => {
+                if (studentToEditId) {
+                    const newName = editNameInput.value.trim();
+                    if (newName) {
+                        await updateDoc(doc(db, `admins/${userId}/students`, studentToEditId), { name: newName });
+                        document.getElementById('cancel-edit-student').click();
+                    }
+                }
+            });
+
+            tanggalInput.addEventListener('change', () => attachAttendanceListener(tanggalInput.value));
+            document.getElementById('export-csv-btn').addEventListener('click', exportToCSV);
+        };
+        
+        const attachFirestoreListeners = () => {
+            if (!userId) return;
+            const studentsPath = `admins/${userId}/students`;
+            studentsUnsubscribe = onSnapshot(query(collection(db, studentsPath)), (snapshot) => {
+                students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                students.sort((a, b) => a.name.localeCompare(b.name));
+                renderStudentListForAbsensi();
+                renderStudentManagementTable();
+                updateSummary();
+            });
+            attachAttendanceListener(tanggalInput.value);
+        };
+        
+        const attachAttendanceListener = (dateString) => {
+            if (attendanceUnsubscribe) attendanceUnsubscribe();
+            if (!userId || !dateString) return;
+            const attendancePath = `admins/${userId}/attendance/${dateString}/records`;
+            attendanceUnsubscribe = onSnapshot(query(collection(db, attendancePath)), (snapshot) => {
+                attendanceData = {};
+                snapshot.docs.forEach(doc => attendanceData[doc.id] = doc.data());
+                renderStudentListForAbsensi();
+                updateSummary();
+            });
+        };
+        
+        // --- FUNGSI UTILITAS ---
+        const getStatusColor = (status) => {
+            switch(status) {
+                case 'Hadir': return 'text-green-800 bg-green-100';
+                case 'Izin': return 'text-blue-800 bg-blue-100';
+                case 'Sakit': return 'text-yellow-800 bg-yellow-100';
+                case 'Alfa': return 'text-red-800 bg-red-100';
+                case 'Pulang': return 'text-orange-800 bg-orange-100';
+                default: return 'text-gray-800 bg-gray-100';
+            }
+        };
+
+        const exportToCSV = () => {
+            const kelas = document.getElementById('kelas').value || 'Tidak_Ada_Kelas';
+            const tanggal = tanggalInput.value;
+            const waliKelas = document.getElementById('wali-kelas').value || 'Tidak_Ada_Wali';
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += `Rekap Absensi Kelas,${kelas}\r\n`;
+            csvContent += `Tanggal,${tanggal}\r\n`;
+            csvContent += `Wali Kelas,${waliKelas}\r\n\r\n`;
+            csvContent += "No.,Nama Siswa,Status,Keterangan,Waktu\r\n";
+
+            students.forEach((student, index) => {
+                const data = attendanceData[student.id] || { status: 'Belum Diabsen', keterangan: '', timestamp: null };
+                const keterangan = `"${(data.keterangan || '').replace(/"/g, '""')}"`;
+                const waktu = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleTimeString('id-ID') : '';
+                csvContent += `${index + 1},${student.name},${data.status},${keterangan},${waktu}\r\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `absensi_${kelas.replace(/\s+/g, '_')}_${tanggal}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // --- INISIALISASI ---
+        document.addEventListener('DOMContentLoaded', setupAuthEventListeners);
+
+    </script>
 </body>
 </html>
+
+
+
